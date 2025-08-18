@@ -1,0 +1,35 @@
+
+.fullscreen-ad-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+}
+
+.ad-content {
+  text-align: center;
+}
+
+.ad-timer {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.close-ad-button {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+}
