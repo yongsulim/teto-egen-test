@@ -11,8 +11,13 @@ function App() {
   const [page, setPage] = useState('start'); // 'start', 'quiz', 'result'
   const [scores, setScores] = useState({ Teto: 0, Egen: 0 });
   const [adState, setAdState] = useState('pre-test'); // 'pre-test', 'post-test', null
+  const [gender, setGender] = useState(null); // null, 'male', 'female'
 
   const handleStart = () => {
+    if (!gender) {
+      alert('성별을 선택해주세요!');
+      return;
+    }
     setPage('quiz');
   };
 
@@ -23,6 +28,7 @@ function App() {
 
   const handleRestart = () => {
     setScores({ Teto: 0, Egen: 0 });
+    setGender(null);
     setPage('start');
     setAdState('pre-test'); // Show ad before next start
   }
@@ -41,10 +47,10 @@ function App() {
       case 'quiz':
         return <Quiz onFinish={handleQuizFinish} />;
       case 'result':
-        return <Result scores={scores} onRestart={handleRestart} />;
+        return <Result scores={scores} gender={gender} onRestart={handleRestart} />;
       case 'start':
       default:
-        return <Start onStart={handleStart} />;
+        return <Start onStart={handleStart} setGender={setGender} selectedGender={gender} />;
     }
   }
 
