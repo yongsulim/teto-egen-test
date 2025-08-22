@@ -293,6 +293,88 @@
   cursor: pointer;
 }
 
+/* --- User Info Section (in Start.js) --- */
+.user-info-container {
+  width: 100%;
+  padding: 10px;
+  background-color: #fafafa;
+  border: 1px solid #efefef;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.user-info-text {
+  font-size: 0.9rem;
+  color: #262626;
+  margin-bottom: 10px;
+}
+
+.user-info-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.user-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid #dbdbdb;
+  color: #262626;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.user-action-button:hover {
+  background-color: #f0f0f0;
+  border-color: #c7c7c7;
+}
+
+.user-action-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* --- Profile Page --- */
+.profile-container {
+  width: 100%;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.result-item {
+  background-color: #fafafa;
+  border: 1px solid #dbdbdb;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.result-item p {
+  margin: 0 0 5px 0;
+}
+
+.result-item p:last-child {
+  margin-bottom: 0;
+}
+
 .ad-banner {
   font-size: 0.9rem;
   color: #8e8e8e;
