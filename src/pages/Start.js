@@ -1,6 +1,5 @@
 
 import React from 'react';
-import DailyQuestion from '../components/DailyQuestion';
 import { auth } from '../firebase';
 import { GoogleAuthProvider, linkWithPopup } from "firebase/auth";
 
@@ -49,8 +48,6 @@ function Start({ onStart, setGender, selectedGender, onLogout, user, onGoToProfi
       )}
       <h1 className="main-title">나는 테토형일까, 에겐형일까?</h1>
       <p className="description">간단한 테스트를 통해 당신의 성향을 알아보세요!</p>
-
-      <DailyQuestion />
 
       <div className="gender-selector">
         <p className="selector-title">당신의 성별을 선택해주세요.</p>

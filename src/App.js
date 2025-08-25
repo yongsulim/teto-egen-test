@@ -42,7 +42,7 @@ function App() {
     }
     // Shuffle questions and pick 15
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    setQuizQuestions(shuffled.slice(0, 15));
+    setQuizQuestions(shuffled.slice(0, 16));
     setPage('quiz');
   };
 
