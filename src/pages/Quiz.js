@@ -57,6 +57,7 @@ function Quiz({ onFinish, questions }) {
             <div style={{ width: `${((currentQuestionIndex + 1) / questionCount) * 100}%` }} className="progress"></div>
         </div>
       <div className="question-counter">Q{currentQuestionIndex + 1} / {questionCount}</div>
+      <img src={currentQuestion.image} alt={`question ${currentQuestionIndex + 1}`} className="question-image" />
       <h2 className="question">{currentQuestion.question}</h2>
       <div className="answers">
         {currentQuestion.answers.map((answer, index) => (
