@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { auth } from '../firebase';
 import { GoogleAuthProvider, linkWithPopup } from "firebase/auth";

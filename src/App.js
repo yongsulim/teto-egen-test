@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import Start from './pages/Start';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
 import Profile from './pages/Profile';
+import AdScreen from './pages/AdScreen'; // New import
 import AdBanner from './components/AdBanner';
-import FullScreenAd from './components/FullScreenAd';
 import './App.css';
 import { remoteConfig, getNumber, auth, db } from './firebase';
 import { onAuthStateChanged, signOut, signInAnonymously } from 'firebase/auth';
@@ -15,11 +14,10 @@ import { questions } from './data/questions';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [page, setPage] = useState('start'); // 'start', 'quiz', 'result', 'profile'
+  const [page, setPage] = useState('start'); // 'start', 'quiz', 'adScreen', 'result', 'profile'
   const [scores, setScores] = useState({ Teto: 0, Egen: 0 });
   const [mbti, setMbti] = useState(null);
   const [quizQuestions, setQuizQuestions] = useState([]);
-  const [adState, setAdState] = useState('pre-test'); // 'pre-test', 'post-test', null
   const [gender, setGender] = useState(null); // null, 'male', 'female'
 
   useEffect(() => {
@@ -61,7 +59,11 @@ function App() {
         console.error("Error adding document: ", e);
       }
     }
-    setAdState('post-test'); // Show ad before showing result
+    setPage('adScreen'); // Transition to ad screen
+  };
+
+  const handleAdComplete = () => {
+    setPage('result'); // Transition to result page after ad
   };
 
   const handleRestart = () => {
@@ -70,17 +72,7 @@ function App() {
     setQuizQuestions([]);
     setGender(null);
     setPage('start');
-    setAdState('pre-test'); // Show ad before next start
   }
-
-  const handleAdClose = () => {
-    if (adState === 'pre-test') {
-      setAdState(null);
-    } else if (adState === 'post-test') {
-      setAdState(null);
-      setPage('result');
-    }
-  };
 
   const handleLogout = () => {
     signOut(auth);
@@ -102,6 +94,8 @@ function App() {
     switch (page) {
       case 'quiz':
         return <Quiz onFinish={handleQuizFinish} questions={quizQuestions} />;
+      case 'adScreen':
+        return <AdScreen onAdComplete={handleAdComplete} />; // Render AdScreen
       case 'result':
         return <Result scores={scores} mbti={mbti} gender={gender} onRestart={handleRestart} />;
       case 'profile':
@@ -114,8 +108,7 @@ function App() {
 
   return (
     <div className="App">
-      {adState && <FullScreenAd onClose={handleAdClose} />}
-      <div style={{ display: adState ? 'none' : 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {renderPage()}
         <AdBanner />
       </div>
