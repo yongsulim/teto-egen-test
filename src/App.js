@@ -3,8 +3,8 @@ import Start from './pages/Start';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
 import Profile from './pages/Profile';
-import AdScreen from './pages/AdScreen'; // New import
-import AdBanner from './components/AdBanner';
+
+
 import './App.css';
 import { remoteConfig, getNumber, auth, db } from './firebase';
 import { onAuthStateChanged, signOut, signInAnonymously } from 'firebase/auth';
@@ -14,7 +14,7 @@ import { questions } from './data/questions';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [page, setPage] = useState('start'); // 'start', 'quiz', 'adScreen', 'result', 'profile'
+  const [page, setPage] = useState('start'); // 'start', 'quiz', 'result', 'profile'
   const [scores, setScores] = useState({ Teto: 0, Egen: 0 });
   const [mbti, setMbti] = useState(null);
   const [quizQuestions, setQuizQuestions] = useState([]);
@@ -59,12 +59,10 @@ function App() {
         console.error("Error adding document: ", e);
       }
     }
-    setPage('adScreen'); // Transition to ad screen
+    setPage('result'); // Transition to result screen
   };
 
-  const handleAdComplete = () => {
-    setPage('result'); // Transition to result page after ad
-  };
+
 
   const handleRestart = () => {
     setScores({ Teto: 0, Egen: 0 });
@@ -94,8 +92,7 @@ function App() {
     switch (page) {
       case 'quiz':
         return <Quiz onFinish={handleQuizFinish} questions={quizQuestions} />;
-      case 'adScreen':
-        return <AdScreen onAdComplete={handleAdComplete} />; // Render AdScreen
+
       case 'result':
         return <Result scores={scores} mbti={mbti} gender={gender} onRestart={handleRestart} />;
       case 'profile':
@@ -110,7 +107,7 @@ function App() {
     <div className="App">
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {renderPage()}
-        <AdBanner />
+  
       </div>
     </div>
   );
