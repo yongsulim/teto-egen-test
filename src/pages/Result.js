@@ -2,6 +2,8 @@ import React, { useRef, useState, useMemo } from 'react';
 import html2canvas from 'html2canvas';
 import { analytics } from '../firebase';
 import { logEvent } from 'firebase/analytics';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 function Result({ scores, mbti, gender, onRestart }) {
   const resultCardRef = useRef();
@@ -103,9 +105,32 @@ function Result({ scores, mbti, gender, onRestart }) {
     return "결과 설명을 찾을 수 없습니다.";
   }
 
-  const handleDownloadImage = () => { 
+  const handleDownloadImage = async () => {
     logEvent(analytics, 'share', { method: 'download_image', content_type: `${resultType}_${mbti}` });
-    html2canvas(resultCardRef.current, { useCORS: true }).then(canvas => { const image = canvas.toDataURL('image/png'); const link = document.createElement('a'); link.href = image; link.download = 'teto-egen-mbti-result.png'; document.body.appendChild(link); link.click(); document.body.removeChild(link); }); 
+    try {
+        const canvas = await html2canvas(resultCardRef.current, { useCORS: true });
+        const image = canvas.toDataURL('image/png');
+
+        if (Capacitor.isNativePlatform()) {
+            const base64Data = image.split(',')[1];
+            await Filesystem.writeFile({
+                path: `teto-egen-mbti-result-${Date.now()}.png`,
+                data: base64Data,
+                directory: Directory.Downloads,
+            });
+            alert('이미지가 다운로드 폴더에 저장되었습니다.');
+        } else {
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'teto-egen-mbti-result.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    } catch (error) {
+        console.error('이미지 저장에 실패했습니다.', error);
+        alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
+    }
   };
   const handleShareToInstagram = () => { 
     logEvent(analytics, 'share', { method: 'instagram_story', content_type: `${resultType}_${mbti}` });
