@@ -6,7 +6,6 @@
   min-height: 80vh;
   margin: 0 auto;
   background-color: #fff;
-  border: 1px solid #dbdbdb;
   border-radius: 8px;
   padding: 20px;
   box-sizing: border-box;
@@ -391,4 +390,12 @@
   object-fit: contain;
   margin-bottom: 20px;
   border-radius: 8px;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 360px) {
+  .main-title { font-size: 2rem; }
+  .description { font-size: 1rem; }
+  .question { font-size: 1.3rem; min-height: 70px; }
+  .answer-button { padding: 15px; }
 }

@@ -129,7 +129,7 @@ function Result({ scores, mbti, gender, onRestart }) {
         }
     } catch (error) {
         console.error('이미지 저장에 실패했습니다.', error);
-        alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
+        alert(`이미지 저장에 실패했습니다. 다시 시도해주세요.\n오류: ${error.message}`);
     }
   };
   const handleShareToInstagram = () => { 
