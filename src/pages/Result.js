@@ -117,6 +117,7 @@ function Result({ scores, mbti, gender, onRestart }) {
                 path: `teto-egen-mbti-result-${Date.now()}.png`,
                 data: base64Data,
                 directory: Directory.Downloads,
+                recursive: true
             });
             alert('이미지가 다운로드 폴더에 저장되었습니다.');
         } else {
