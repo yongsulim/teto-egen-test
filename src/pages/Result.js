@@ -113,13 +113,18 @@ function Result({ scores, mbti, gender, onRestart }) {
 
         if (Capacitor.isNativePlatform()) {
             const base64Data = image.split(',')[1];
-            await Filesystem.writeFile({
-                path: `teto-egen-mbti-result-${Date.now()}.png`,
-                data: base64Data,
-                directory: Directory.Downloads,
-                recursive: true
-            });
-            alert('이미지가 다운로드 폴더에 저장되었습니다.');
+            try {
+                const result = await Filesystem.writeFile({
+                    path: `teto-egen-mbti-result-${Date.now()}.png`,
+                    data: base64Data,
+                    directory: Directory.External,
+                });
+                console.log('File saved:', result.uri);
+                alert('이미지가 갤러리에 저장되었습니다. 갤러리 앱을 확인해주세요.');
+            } catch (e) {
+                console.error('Unable to save file', e);
+                alert(`이미지 저장에 실패했습니다. 오류: ${e.message}`);
+            }
         } else {
             const link = document.createElement('a');
             link.href = image;
@@ -129,8 +134,8 @@ function Result({ scores, mbti, gender, onRestart }) {
             document.body.removeChild(link);
         }
     } catch (error) {
-        console.error('이미지 저장에 실패했습니다.', error);
-        alert(`이미지 저장에 실패했습니다. 다시 시도해주세요.\n오류: ${error.message}`);
+        console.error('이미지 생성에 실패했습니다.', error);
+        alert(`이미지 생성에 실패했습니다. 다시 시도해주세요.\n오류: ${error.message}`);
     }
   };
   const handleShareToInstagram = () => { 
