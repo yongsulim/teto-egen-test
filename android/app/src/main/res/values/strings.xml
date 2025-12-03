@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">teto-egen-test</string>
-    <string name="title_activity_main">teto-egen-test</string>
+    <string name="app_name">테토와 에겐은 물보다 진하다</string>
+    <string name="title_activity_main">테토와 에겐은 물보다 진하다</string>
     <string name="package_name">com.teto.egen.test</string>
     <string name="custom_url_scheme">com.teto.egen.test</string>
 </resources>

@@ -117,7 +117,7 @@ function Result({ scores, mbti, gender, onRestart }) {
                 const result = await Filesystem.writeFile({
                     path: `teto-egen-mbti-result-${Date.now()}.png`,
                     data: base64Data,
-                    directory: Directory.External,
+                    directory: Directory.Photos,
                 });
                 console.log('File saved:', result.uri);
                 alert('이미지가 갤러리에 저장되었습니다. 갤러리 앱을 확인해주세요.');
