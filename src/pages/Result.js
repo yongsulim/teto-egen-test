@@ -114,13 +114,22 @@ function Result({ scores, mbti, gender, onRestart }) {
         if (Capacitor.isNativePlatform()) {
             const base64Data = image.split(',')[1];
             try {
+                const folder = 'TetoEgen';
+                const filename = `teto-egen-mbti-result-${Date.now()}.png`;
+
+                await Filesystem.mkdir({
+                    path: folder,
+                    directory: Directory.Photos,
+                    recursive: true
+                });
+
                 const result = await Filesystem.writeFile({
-                    path: `teto-egen-mbti-result-${Date.now()}.png`,
+                    path: `${folder}/${filename}`,
                     data: base64Data,
                     directory: Directory.Photos,
                 });
                 console.log('File saved:', result.uri);
-                alert('이미지가 갤러리에 저장되었습니다. 갤러리 앱을 확인해주세요.');
+                alert('이미지가 갤러리에 저장되었습니다. Pictures/TetoEgen 폴더를 확인해주세요.');
             } catch (e) {
                 console.error('Unable to save file', e);
                 alert(`이미지 저장에 실패했습니다. 오류: ${e.message}`);
