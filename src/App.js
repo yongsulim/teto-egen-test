@@ -3,6 +3,7 @@ import Start from './pages/Start';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
 import Profile from './pages/Profile';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 
 import './App.css';
@@ -24,6 +25,7 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        SplashScreen.hide();
       } else {
         signInAnonymously(auth).catch((error) => {
           console.error("Anonymous sign-in failed", error);

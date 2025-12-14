@@ -112,7 +112,15 @@ function Result({ scores, mbti, gender, onRestart }) {
         const image = canvas.toDataURL('image/png');
 
         if (Capacitor.isNativePlatform()) {
-            const base64Data = image.split(',')[1];
+            const base64Data = image.split(',')[1]; 
+
+            // Request permissions before saving
+            let permissionStatus = await Capacitor.Plugins.Permissions.request({ name: 'photos' });
+
+            if (permissionStatus.photos !== 'granted') {
+                alert('이미지를 저장하려면 사진 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.');
+                return;
+            }
             try {
                 const folder = 'TetoEgen';
                 const filename = `teto-egen-mbti-result-${Date.now()}.png`;
