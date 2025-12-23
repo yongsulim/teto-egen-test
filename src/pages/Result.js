@@ -4,7 +4,6 @@ import { analytics } from '../firebase';
 import { logEvent } from 'firebase/analytics';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-import { Camera } from '@capacitor/camera';
 
 function Result({ scores, mbti, gender, onRestart }) {
   const resultCardRef = useRef();
@@ -106,90 +105,48 @@ function Result({ scores, mbti, gender, onRestart }) {
     return "결과 설명을 찾을 수 없습니다.";
   }
 
-    const handleDownloadImage = async () => {
-      logEvent(analytics, 'share', { method: 'download_image', content_type: `${resultType}_${mbti}` });
-      try {
-          const canvas = await html2canvas(resultCardRef.current, { useCORS: true });
-          const image = canvas.toDataURL('image/png');
-  
-          if (Capacitor.isNativePlatform()) {
-              const base64Data = image.split(',')[1];
-  
-              const requestPermissions = async () => {
-                  if (!Camera || typeof Camera.checkPermissions !== 'function' || typeof Camera.requestPermissions !== 'function') {
-                      alert('카메라 플러그인의 권한 기능을 사용할 수 없습니다.');
-                      console.error("Camera plugin or its permission methods are not available.");
-                      return false;
-                  }
-  
-                  try {
-                      let permStatus = await Camera.checkPermissions();
-                      if (permStatus.photos === 'granted') {
-                          return true;
-                      }
-                      if (permStatus.photos === 'denied') {
-                          alert('사진 접근 권한이 거부되었습니다. 이미지 저장을 원하시면 설정에서 권한을 허용해주세요.');
-                          return false;
-                      }
-                      
-                      permStatus = await Camera.requestPermissions({ permissions: ['photos'] });
-                      
-                      if (permStatus.photos === 'denied') {
-                          alert('사진 접근 권한이 거부되었습니다. 이미지 저장을 원하시면 설정에서 권한을 허용해주세요.');
-                          return false;
-                      }
-                      return permStatus.photos === 'granted';
-  
-                  } catch (e) {
-                      console.error('Permission request failed', e);
-                      if (e.message && e.message.includes('not implemented')) {
-                          alert('현재 플랫폼에서는 사진첩 권한 요청이 지원되지 않습니다.');
-                      } else {
-                          alert(`권한 요청 중 오류가 발생했습니다: ${e.message}`);
-                      }
-                      return false;
-                  }
-              };
-  
-              const hasPermission = await requestPermissions();
-              if (!hasPermission) {
-                  return;
-              }
-  
-              try {
-                  const folder = 'TetoEgen';
-                  const filename = `teto-egen-mbti-result-${Date.now()}.png`;
-  
-                  await Filesystem.mkdir({
-                      path: folder,
-                      directory: Directory.Photos,
-                      recursive: true
-                  });
-  
-                  const result = await Filesystem.writeFile({
-                      path: `${folder}/${filename}`,
-                      data: base64Data,
-                      directory: Directory.Photos,
-                  });
-                  console.log('File saved:', result.uri);
-                  alert('이미지가 갤러리에 저장되었습니다.');
-              } catch (e) {
-                  console.error('Unable to save file', e);
-                  alert(`이미지 저장에 실패했습니다. 다시 시도해주세요.`);
-              }
-          } else {
-              const link = document.createElement('a');
-              link.href = image;
-              link.download = 'teto-egen-mbti-result.png';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-          }
-      } catch (error) {
-          console.error('이미지 생성에 실패했습니다.', error);
-          alert(`이미지 생성에 실패했습니다. 다시 시도해주세요.`);
-      }
-    };  const handleShareToInstagram = () => { 
+  const handleDownloadImage = async () => {
+    logEvent(analytics, 'share', { method: 'download_image', content_type: `${resultType}_${mbti}` });
+    try {
+        const canvas = await html2canvas(resultCardRef.current, { useCORS: true });
+        const image = canvas.toDataURL('image/png');
+
+        if (Capacitor.isNativePlatform()) {
+            const base64Data = image.split(',')[1];
+            try {
+                const folder = 'TetoEgen';
+                const filename = `teto-egen-mbti-result-${Date.now()}.png`;
+
+                await Filesystem.mkdir({
+                    path: folder,
+                    directory: Directory.Photos,
+                    recursive: true
+                });
+
+                await Filesystem.writeFile({
+                    path: `${folder}/${filename}`,
+                    data: base64Data,
+                    directory: Directory.Photos,
+                });
+
+                alert('이미지가 갤러리에 저장되었습니다.');
+            } catch (e) {
+                console.error('Unable to save file', e);
+                alert(`이미지 저장에 실패했습니다. 앱의 저장 공간 접근 권한이 허용되어 있는지 확인해주세요. 오류: ${e.message}`);
+            }
+        } else {
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'teto-egen-mbti-result.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    } catch (error) {
+        console.error('이미지 생성에 실패했습니다.', error);
+        alert(`이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.`);
+    }
+  };  const handleShareToInstagram = () => { 
     logEvent(analytics, 'share', { method: 'instagram_story', content_type: `${resultType}_${mbti}` });
     alert("1. '결과 이미지 저장' 버튼을 눌러 이미지를 저장하세요.\n2. 인스타그램 앱을 열고, 스토리에서 저장된 이미지를 선택하여 공유하세요."); 
   };
