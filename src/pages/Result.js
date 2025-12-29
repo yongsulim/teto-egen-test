@@ -1,16 +1,11 @@
 import React, { useRef, useState, useMemo } from 'react';
-import html2canvas from 'html2canvas';
 import { analytics } from '../firebase';
 import { logEvent } from 'firebase/analytics';
-import { Capacitor } from '@capacitor/core';
-import { Filesystem, Directory } from '@capacitor/filesystem';
 
 function Result({ scores, mbti, gender, onRestart }) {
   const resultCardRef = useRef();
   const [theme, setTheme] = useState('default');
   const [frame, setFrame] = useState('none');
-  const [stickers, setStickers] = useState([]);
-  const [draggingSticker, setDraggingSticker] = useState({ id: null, offset: { x: 0, y: 0 } });
 
   const tetoScore = scores.Teto;
   const egenScore = scores.Egen;
@@ -32,32 +27,6 @@ function Result({ scores, mbti, gender, onRestart }) {
 
   const themes = [{ id: 'default', name: '기본' }, { id: 'dark', name: '다크' }, { id: 'pastel', name: '파스텔' }, { id: 'forest', name: '포레스트' }, { id: 'ocean', name: '오션' }, { id: 'sunshine', name: '선샤인' }];
   const frames = [{ id: 'none', name: '없음' }, { id: 'solid', name: '실선' }, { id: 'double', name: '이중선' }, { id: 'groove', name: '입체' }];
-  const availableStickers = ['💖', '✨', '😂', '👍', '💯', '🔥'];
-
-  const addSticker = (sticker) => {
-    const newSticker = { id: Date.now(), text: sticker, top: '50%', left: '50%' };
-    setStickers([...stickers, newSticker]);
-  };
-
-  const handleDragStart = (id, e) => {
-    e.preventDefault();
-    const stickerRect = e.target.getBoundingClientRect();
-    const offset = { x: e.clientX - stickerRect.left, y: e.clientY - stickerRect.top };
-    setDraggingSticker({ id, offset });
-  };
-
-  const handleDragMove = (e) => {
-    if (!draggingSticker.id) return;
-    const cardRect = resultCardRef.current.getBoundingClientRect();
-    const newLeft = e.clientX - cardRect.left - draggingSticker.offset.x;
-    const newTop = e.clientY - cardRect.top - draggingSticker.offset.y;
-
-    setStickers(stickers.map(s => s.id === draggingSticker.id ? { ...s, left: `${newLeft}px`, top: `${newTop}px` } : s));
-  };
-
-  const handleDragEnd = () => {
-    setDraggingSticker({ id: null, offset: { x: 0, y: 0 } });
-  };
 
   const resultDescriptions = {
     '테토형': {
@@ -155,20 +124,11 @@ function Result({ scores, mbti, gender, onRestart }) {
 
   return (
     <div className="result-container fade-in">
-      <div className={`result-card ${theme} frame-${frame}`} ref={resultCardRef} onMouseMove={handleDragMove} onMouseUp={handleDragEnd} onMouseLeave={handleDragEnd}>
+      <div className={`result-card ${theme} frame-${frame}`} ref={resultCardRef}>
         <p className="result-intro">당신의 성향은...</p>
         <h1 className="result-title">{genderText} {resultType} {mbti}</h1>
         <p className="result-description">{getDescription()}</p>
         <div className="score-details"><p>{resultType} 비율: {percentage}%</p><p>당신은 상위 {percentile}%에 속합니다!</p></div>
-        {stickers.map(sticker => (
-          <span 
-            key={sticker.id} 
-            className={`sticker ${draggingSticker.id === sticker.id ? 'dragging' : ''}`}
-            style={{ top: sticker.top, left: sticker.left }} 
-            onMouseDown={(e) => handleDragStart(sticker.id, e)}>
-            {sticker.text}
-          </span>
-        ))}
       </div>
 
       <div className="decorator-section">
@@ -182,16 +142,8 @@ function Result({ scores, mbti, gender, onRestart }) {
           <div className="frame-buttons">{frames.map(f => (<button key={f.id} onClick={() => setFrame(f.id)} className={`frame-button ${f.id} ${frame === f.id ? 'active' : ''}`}>{f.name}</button>))}
           </div>
         </div>
-        <div className="decorator-group">
-          <p className="decorator-title">스티커 추가</p>
-          <div className="sticker-buttons">
-            {availableStickers.map(s => (<button key={s} onClick={() => addSticker(s)} className="sticker-button">{s}</button>))}
-            <button onClick={() => setStickers([])} className="sticker-clear-button">초기화</button>
-          </div>
-        </div>
       </div>
 
-      <div className="share-section"><button onClick={handleDownloadImage} className="action-button">결과 이미지 저장</button><button onClick={handleShareToInstagram} className="action-button">인스타그램 스토리에 공유</button></div>
       <div className="hashtag-section"><p className="hashtag-title">추천 해시태그</p><div className="hashtags">{hashtags.map(tag => <span key="tag" className="hashtag">{tag}</span>)}</div><button onClick={handleCopyHashtags} className="copy-button">해시태그 복사</button></div>
       <button onClick={onRestart} className="restart-button">테스트 다시하기</button>
     </div>
