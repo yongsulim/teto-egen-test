@@ -74,6 +74,54 @@ function Result({ scores, mbti, gender, onRestart }) {
     return "결과 설명을 찾을 수 없습니다.";
   }
 
+  const handleDownloadImage = async () => {
+    logEvent(analytics, 'share', { method: 'download_image', content_type: `${resultType}_${mbti}` });
+    try {
+        const canvas = await html2canvas(resultCardRef.current, { useCORS: true });
+        const image = canvas.toDataURL('image/png');
+
+        if (Capacitor.isNativePlatform()) {
+            const base64Data = image.split(',')[1];
+            try {
+                const folder = 'TetoEgen';
+                const filename = `teto-egen-mbti-result-${Date.now()}.png`;
+
+                await Filesystem.mkdir({
+                    path: folder,
+                    directory: Directory.Photos,
+                    recursive: true
+                });
+
+                await Filesystem.writeFile({
+                    path: `${folder}/${filename}`,
+                    data: base64Data,
+                    directory: Directory.Photos,
+                });
+
+                alert('이미지가 갤러리에 저장되었습니다.');
+            } catch (e) {
+                console.error('Unable to save file', e);
+                alert(`이미지 저장에 실패했습니다. 앱의 저장 공간 접근 권한이 허용되어 있는지 확인해주세요. 오류: ${e.message}`);
+            }
+        } else {
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'teto-egen-mbti-result.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    } catch (error) {
+        console.error('이미지 생성에 실패했습니다.', error);
+        alert(`이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.`);
+    }
+  };  const handleShareToInstagram = () => { 
+    logEvent(analytics, 'share', { method: 'instagram_story', content_type: `${resultType}_${mbti}` });
+    alert("1. '결과 이미지 저장' 버튼을 눌러 이미지를 저장하세요.\n2. 인스타그램 앱을 열고, 스토리에서 저장된 이미지를 선택하여 공유하세요."); 
+  };
+  const hashtags = ['#테토에겐', '#MBTI성향테스트', `#${resultType}` , `#${mbti}`];
+  const handleCopyHashtags = () => { navigator.clipboard.writeText(hashtags.join(' ')).then(() => alert('해시태그가 클립보드에 복사되었습니다!')); };
+
   return (
     <div className="result-container fade-in">
       <div className={`result-card ${theme} frame-${frame}`} ref={resultCardRef}>
@@ -96,6 +144,7 @@ function Result({ scores, mbti, gender, onRestart }) {
         </div>
       </div>
 
+      <div className="hashtag-section"><p className="hashtag-title">추천 해시태그</p><div className="hashtags">{hashtags.map(tag => <span key="tag" className="hashtag">{tag}</span>)}</div><button onClick={handleCopyHashtags} className="copy-button">해시태그 복사</button></div>
       <button onClick={onRestart} className="restart-button">테스트 다시하기</button>
     </div>
   );
